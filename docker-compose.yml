@@ -1,0 +1,30 @@
+services:
+  bot:
+    build: .
+    environment:
+      - API_ID=${API_ID}
+      - API_HASH=${API_HASH}
+      - BOT_TOKEN=${BOT_TOKEN}
+    command: ["python", "bot.py"]
+    restart: unless-stopped
+
+  proxy:
+    build: .
+    depends_on:
+      - redis
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - REDIS_URL=redis://redis:6379/0
+    networks:
+      - default
+      - nginx_proxy
+    command: ["uvicorn", "proxy:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--proxy-headers", "--forwarded-allow-ips", "*"]
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+
+networks:
+  nginx_proxy:
+    external: true

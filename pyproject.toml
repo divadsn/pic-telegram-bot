@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "pic-telegram-bot"
+version = "0.1.0"
+description = ""
+authors = ["David Sn <divad.nnamtdeis@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+async-lru = "^2.0.4"
+beautifulsoup4 = "^4.13.3"
+httpx = "^0.28.1"
+pyrogram = "^2.0.106"
+tgcrypto = "^1.2.5"
+
+[tool.poetry.group.proxy.dependencies]
+fastapi = "^0.115.11"
+pillow = "^11.1.0"
+redis = "^5.2.1"
+uvicorn = "^0.34.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
