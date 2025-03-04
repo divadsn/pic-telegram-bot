@@ -38,17 +38,22 @@ async def download_image(url: str) -> bytes:
     }
 
     async with AsyncClient(headers=request_headers, timeout=30) as client:
-        response = await client.get(url, follow_redirects=True)
+        async with client.stream("GET", url, follow_redirects=True) as response:
+            content_length = response.headers.get("Content-Length")
 
-        # Check if the image exists
-        if response.status_code != 200:
-            raise HTTPException(status_code=404, detail="Image not found")
+            # Check if the image exists
+            if response.status_code != 200:
+                raise HTTPException(status_code=404, detail="Image not found")
 
-        # Check image size
-        if len(response.content) > 10 * 1024 * 1024:
-            raise HTTPException(status_code=413, detail="Image too large")
+            # Check image size
+            if content_length and content_length.isdigit() and int(content_length) > 5 * 1024 * 1024:
+                raise HTTPException(status_code=413, detail="Image too large")
 
-        return response.content
+            # Check content type
+            if not response.headers.get("Content-Type", "").startswith("image/"):
+                raise HTTPException(status_code=415, detail="Unsupported content type")
+
+            return await response.aread()
 
 
 async def cache_image(url_hash: str, image: Image):
