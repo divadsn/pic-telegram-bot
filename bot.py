@@ -3,7 +3,7 @@ import hmac
 import logging
 import os
 
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse
 from uuid import uuid4
 
 from async_lru import alru_cache
@@ -56,6 +56,11 @@ class PictureSearchBot:
             for i, result in enumerate(soup.find("div", id="urls").find_all("article")):
                 image_url = result.find("a", class_="result-images-source").find("img")["data-src"]
                 resolution = result.find("span", class_="image_resolution")
+
+                # Try to filter out svg images by parsing the url path and checking the extension
+                path = urlparse(image_url).path
+                if os.path.splitext(path)[1].lower() == ".svg":
+                    continue
 
                 if resolution:
                     if "x" in resolution.text:
