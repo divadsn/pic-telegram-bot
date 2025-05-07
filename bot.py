@@ -77,7 +77,7 @@ class PictureSearchBot:
                         photo_width=int(image_size[0]),
                         photo_height=int(image_size[1]),
                         thumb_url=self.get_url(image_url, 300),
-                        caption=f"[View Image]({image_url})",
+                        caption=f"[View Image](<{image_url}>)",
                         parse_mode=ParseMode.MARKDOWN,
                     )
                 )
